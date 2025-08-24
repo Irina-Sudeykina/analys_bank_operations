@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -6,15 +8,19 @@ from pandas.testing import assert_frame_equal
 
 from src import utils
 
+# Задаём корневой путь проекта.
+root_path = Path(__file__).resolve().parents[1]
+file_of_names = os.path.join(root_path, "data\\user_settings.json")
+bad_json_file = os.path.join(root_path, "data\\bad_json_file.json")
+
 
 def test_get_greeting() -> None:
     """
-    Приверка функции get_greeting, которая
+    Проверка функции get_greeting, которая
     принимает строку с датой и временем в формате YYYY-MM-DD HH:MM:SS
     и возвращает строку с приветствием
     :return: строка с приветствием
     """
-
     datetime_str = "2025-08-20 09:05:37"
     result = utils.get_greeting(datetime_str)
     assert result == "Доброе утро"
@@ -44,7 +50,6 @@ def test_load_transactions_xlsx_file(mock_read_excel: MagicMock) -> None:
     :param mock_read_excel: Мокируемый объект pandas.read_excel
     :return: DataFrame с финансовыми операциями
     """
-
     # Подготавливаем пример DataFrame
     sample_data = {
         "Статус": ["OK"],
@@ -99,7 +104,7 @@ def test_load_transactions_xlsx_error(mock_read_excel: MagicMock) -> None:
 
 def test_get_cards_info(transactions_df: pd.DataFrame, cards_info_on_transactions_df: list[dict]) -> None:
     """
-    Приверка функции get_cards_info, которая
+    Проверка функции get_cards_info, которая
     принимает DataFrame с банковскими операциями
     и возвращает список с информацией по каждой карте
     :param transactions_df: Фикстура DataFrame с финансовыми операциями
@@ -111,11 +116,69 @@ def test_get_cards_info(transactions_df: pd.DataFrame, cards_info_on_transaction
 
 def test_get_top_transactions(transactions_df: pd.DataFrame, top_transactions_on_transactions_df: list[dict]) -> None:
     """
-    Приверка функции get_top_transactions, которая
+    Проверка функции get_top_transactions, которая
     принимает DataFrame с банковскими операциями
-    и возвращает список с 5ю последними транзакциями
+    и возвращает список с 5-ю последними транзакциями
     :param transactions_df: Фикстура DataFrame с финансовыми операциями
     :param top_transactions_on_transactions_df: Фикстура с данными по картам
     :return: список с информацией по каждой карте
     """
     assert utils.get_top_transactions(transactions_df) == top_transactions_on_transactions_df
+
+
+def test_load_currencies_json_file() -> None:
+    """
+    Проверка работы функции load_currencies_json_file,
+    которая принимает на вход путь до JSON-файла
+    и возвращает список валют
+    :return: список валют
+    """
+    assert utils.load_currencies_json_file(file_of_names) == ["USD", "EUR"]
+
+    assert os.path.exists(file_of_names)
+
+    assert utils.load_currencies_json_file("test") == ["USD", "EUR"]
+    assert utils.load_currencies_json_file(bad_json_file) == ["USD", "EUR"]
+
+
+@patch("requests.get")
+def test_get_exchange_rate_success(mock_get: Any) -> None:
+    """
+    Проверка функции get_exchange_rate, которая
+    принимает дату в формате 2025-08-20, список кодов валюты и код валюты обмена
+    и возвращает список курсов обмена на дату
+    :param mock_get: Фикстура заменяющая requests.get
+    :return: список курсов обмена на дату
+    """
+    # Создаём фиктивный ответ от API
+    mock_response = MagicMock()
+    mock_response.json.return_value = {"data": {"USD": 0.0, "EUR": 0.0}, "status_code": 200}
+    mock_get.return_value = mock_response  # Подменяем реальный вызов requests.get фиктивным объектом
+
+    currency_from = ["USD", "EUR"]
+    currency_to = "RUB"
+    date_str = "2025-08-20"
+
+    # Выполняем тестируемую функцию
+    result = utils.get_exchange_rate(date_str, currency_from, currency_to)
+
+    # Проверяем результат
+    assert result == [{"currency": "USD", "rate": 0.0}, {"currency": "EUR", "rate": 0.0}]
+
+
+@patch("requests.get")
+def test_get_exchange_rate_failure(mock_get: Any) -> None:
+    """
+    Проверка функции get_exchange_rate, конвертирующей сумму из одной валюты в другую
+    Отлавливаем ошибки
+    :param mock_get: Фикстура заменяющая requests.get
+    :return: список курсов обмена
+    """
+    # Моделируем ошибку при получении данных
+    mock_get.side_effect = Exception("Искусственная ошибка при обращении к API")
+
+    # Выполнение тестируемой функции
+    result = utils.get_exchange_rate("2025-08-20", ["USD", "EUR"], "RUB")
+
+    # Ожидается, что при ошибке API вернутся нулевые значения
+    assert result == [{"currency": "USD", "rate": 0.0}, {"currency": "EUR", "rate": 0.0}]

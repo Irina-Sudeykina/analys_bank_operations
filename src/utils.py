@@ -1,7 +1,11 @@
+import json
+import os
 from datetime import datetime
 from typing import Any
 
 import pandas as pd
+import requests
+from dotenv import load_dotenv
 
 # Получить текущую дату и время
 now = datetime.now()
@@ -109,5 +113,60 @@ def get_top_transactions(transactions: pd.DataFrame) -> list[dict]:
                 "description": group_data["Описание"],
             }
         )
+
+    return result_list
+
+
+def load_currencies_json_file(settings_file: str) -> list[str]:
+    """
+    Функция принимает путь к json-файлу с настройками пользователя
+    и возвращает список валют
+    :param user_settings_file: страка содержащая путь к json-файлу
+    :return: список валют
+    """
+    try:
+        with open(settings_file, mode="r", encoding="utf-8") as currencies_file:
+            try:
+                user_settings = json.load(currencies_file)
+                currencies_result = []
+                for i in user_settings["user_currencies"]:
+                    if len(i) != 0:
+                        currencies_result.append(i)
+            except json.JSONDecodeError:
+                return ["USD", "EUR"]
+    except FileNotFoundError:
+        return ["USD", "EUR"]
+
+    return currencies_result
+
+
+def get_exchange_rate(date_str: str, currency_from: list[str], currency_to: str) -> list[dict]:
+    """
+    Функция принимает дату в формате 2025-08-20, список кодов валюты и код валюты обмена
+    и возвращает список курсов обмена на дату
+    :param date_str: дата в формате 2025-08-20
+    :param currency_from: список кодов валюты - например USD, EUR
+    :param currency_to: код валюты обмена - например RUB
+    :return: список курсов обмена на дату
+    """
+    load_dotenv()
+    API_KEY = str(os.getenv("API_KEY"))
+    BASE_URL = "https://api.freecurrencyapi.com/v1/latest"  # Для текущих курсов
+
+    result_list = []
+
+    for i in currency_from:
+        try:
+            response = requests.get(BASE_URL, params={"apikey": API_KEY, "base_currency": i, "date": date_str})
+
+            if response.status_code == 200:
+                data = response.json()
+                result_rate = round(data["data"].get(currency_to, 0.0), 2)
+            else:
+                result_rate = 0.0
+        except Exception:
+            result_rate = 0.0
+
+        result_list.append({"currency": i, "rate": result_rate})
 
     return result_list
