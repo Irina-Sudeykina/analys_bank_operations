@@ -48,6 +48,38 @@ def home_json() -> str:
             "total_spent": 2380912.73,
             "cashback": 0.0
         }
+    ],
+    "top_transactions": [
+        {
+            "date": "31.12.2021",
+            "amount": -160.89,
+            "category": "Супермаркеты",
+            "description": "Колхоз"
+        },
+        {
+            "date": "31.12.2021",
+            "amount": -64.0,
+            "category": "Супермаркеты",
+            "description": "Колхоз"
+        },
+        {
+            "date": "31.12.2021",
+            "amount": -118.12,
+            "category": "Супермаркеты",
+            "description": "Магнит"
+        },
+        {
+            "date": "31.12.2021",
+            "amount": -78.05,
+            "category": "Супермаркеты",
+            "description": "Колхоз"
+        },
+        {
+            "date": "31.12.2021",
+            "amount": -564.0,
+            "category": "Различные товары",
+            "description": "Ozon.ru"
+        }
     ]
 }"""
 
@@ -88,4 +120,16 @@ def cards_info_on_transactions_df() -> list[dict]:
     return [
         {"last_digits": "4556", "total_spent": 1411.4, "cashback": 70.0},
         {"last_digits": "5091", "total_spent": 218.07, "cashback": 0.0},
+    ]
+
+
+@pytest.fixture
+def top_transactions_on_transactions_df() -> list[dict]:
+    """
+    Фикстура c последними транзакциями
+    :return: список с последними транзакциями
+    """
+    return [
+        {"date": "30.12.2021", "amount": -1411.4, "category": "Ж/д билеты", "description": "РЖД"},
+        {"date": "26.12.2021", "amount": -218.07, "category": "Каршеринг", "description": "Ситидрайв"},
     ]

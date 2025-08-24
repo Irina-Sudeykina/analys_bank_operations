@@ -25,8 +25,9 @@ def get_home_json(date_time_str: str) -> str:
     df = utils.load_transactions_xlsx_file(transactions_file)
 
     cards_info = utils.get_cards_info(df)
+    top_transactions = utils.get_top_transactions(df)
 
-    home_json = {"greeting": f"{my_greeting}", "cards": cards_info}
+    home_json = {"greeting": f"{my_greeting}", "cards": cards_info, "top_transactions": top_transactions}
     return json.dumps(home_json, ensure_ascii=False, indent=4)
 
 

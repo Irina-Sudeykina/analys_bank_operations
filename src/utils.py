@@ -88,3 +88,26 @@ def get_cards_info(transactions: pd.DataFrame) -> list[dict]:
 
         result_list.append({"last_digits": last_four_digits, "total_spent": total_spent, "cashback": cashback})
     return result_list
+
+
+def get_top_transactions(transactions: pd.DataFrame) -> list[dict]:
+    """
+    Функция принимает DataFrame с банковскими операциями
+    и возвращает список с 5ю последними транзакциями
+    :param transactions: DataFrame с банковскими операциями
+    :return: список с 5ю последними транзакциями
+    """
+    transactions = transactions.sort_values(by="Дата операции", ascending=False)
+    transactions = transactions.head(5)
+    result_list = []
+    for card_number, group_data in transactions.iterrows():
+        result_list.append(
+            {
+                "date": group_data["Дата платежа"],
+                "amount": group_data["Сумма операции"],
+                "category": group_data["Категория"],
+                "description": group_data["Описание"],
+            }
+        )
+
+    return result_list

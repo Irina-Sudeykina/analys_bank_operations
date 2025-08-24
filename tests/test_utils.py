@@ -107,3 +107,15 @@ def test_get_cards_info(transactions_df: pd.DataFrame, cards_info_on_transaction
     :return: список с информацией по каждой карте
     """
     assert utils.get_cards_info(transactions_df) == cards_info_on_transactions_df
+
+
+def test_get_top_transactions(transactions_df: pd.DataFrame, top_transactions_on_transactions_df: list[dict]) -> None:
+    """
+    Приверка функции get_top_transactions, которая
+    принимает DataFrame с банковскими операциями
+    и возвращает список с 5ю последними транзакциями
+    :param transactions_df: Фикстура DataFrame с финансовыми операциями
+    :param top_transactions_on_transactions_df: Фикстура с данными по картам
+    :return: список с информацией по каждой карте
+    """
+    assert utils.get_top_transactions(transactions_df) == top_transactions_on_transactions_df
