@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 import pandas as pd
 
@@ -16,16 +17,21 @@ def get_greeting(datetime_str: str) -> str:
     :param datetime_str: строка датой и временем в формате YYYY-MM-DD HH:MM:SS
     :return: строка с приветствием
     """
-    my_hour = int(datetime_str[11:13])
+    try:
+        my_hour = int(datetime_str[11:13])
 
-    if (my_hour >= 0) and (my_hour <= 4):
-        my_greeting = "Доброй ночи"
-    elif (my_hour >= 5) and (my_hour <= 11):
-        my_greeting = "Доброе утро"
-    elif (my_hour >= 12) and (my_hour <= 16):
-        my_greeting = "Добрый день"
-    else:
-        my_greeting = "Добрый вечер"
+        if (my_hour >= 0) and (my_hour <= 4):
+            my_greeting = "Доброй ночи"
+        elif (my_hour >= 5) and (my_hour <= 11):
+            my_greeting = "Доброе утро"
+        elif (my_hour >= 12) and (my_hour <= 16):
+            my_greeting = "Добрый день"
+        else:
+            my_greeting = "Добрый вечер"
+
+    except Exception:
+        print("Что-то пошло не так при обработке даты и времени")
+        my_greeting = ""
 
     return my_greeting
 
@@ -37,7 +43,27 @@ def load_transactions_xlsx_file(transactions_file: str) -> pd.DataFrame:
     :param transactions_file: страка содержащая путь к XLSX-файллу
     :return: DataFrame с банковскими операциями
     """
-    df = pd.read_excel(transactions_file)
+    try:
+        df = pd.read_excel(transactions_file)
+    except Exception:
+        data: dict[str, list[Any]] = {
+            "Дата операции": [],
+            "Дата платежа": [],
+            "Номер карты": [],
+            "Статус": [],
+            "Сумма операции": [],
+            "Валюта операции": [],
+            "Сумма платежа": [],
+            "Валюта платежа": [],
+            "Кэшбэк": [],
+            "Категория": [],
+            "MCC": [],
+            "Описание": [],
+            "Бонусы (включая кэшбэк)": [],
+            "Округление на инвесткопилку": [],
+            "Сумма операции с округлением": [],
+        }
+        df = pd.DataFrame(data)
     return df
 
 
