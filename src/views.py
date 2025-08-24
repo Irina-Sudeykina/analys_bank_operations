@@ -1,0 +1,34 @@
+import json
+import os
+from pathlib import Path
+
+from src import utils
+
+project_root = Path(__file__).resolve().parent.parent
+transactions_file = os.path.join(project_root, r"data\operations.xlsx")  # Используем raw-string
+
+
+def get_home_json(date_time_str: str) -> str:
+    """
+    Главная функция, принимающая на вход строку с датой и временем в формате YYYY-MM-DD HH:MM:SS
+    и возвращающая JSON-ответ со следующими данными:
+        Приветствие
+        Информация по каждой карте
+        Топ-5 транзакций по сумме платежа
+        Курс валют
+        Стоимость акций из S&P500
+    :param date_time_str:
+    :return:
+    """
+    my_greeting = utils.get_greeting(date_time_str)
+
+    df = utils.load_transactions_xlsx_file(transactions_file)
+
+    cards_info = utils.get_cards_info(df)
+
+    home_json = {"greeting": f"{my_greeting}", "cards": cards_info}
+    return json.dumps(home_json, ensure_ascii=False, indent=4)
+
+
+datetime_str = utils.formatted_datetime  # "2025-08-20 14:05:37"
+print(get_home_json(datetime_str))
