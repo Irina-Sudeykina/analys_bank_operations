@@ -90,6 +90,28 @@ def home_json() -> str:
             "currency": "EUR",
             "rate": 94.56
         }
+    ],
+    "stock_prices": [
+        {
+            "stock": "AAPL",
+            "price": 230.56
+        },
+        {
+            "stock": "AMZN",
+            "price": 228.01
+        },
+        {
+            "stock": "GOOGL",
+            "price": 201.57
+        },
+        {
+            "stock": "MSFT",
+            "price": 508.93
+        },
+        {
+            "stock": "TSLA",
+            "price": 329.31
+        }
     ]
 }"""
 

@@ -1,10 +1,11 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 import pandas as pd
 import requests
+import yfinance as yf
 from dotenv import load_dotenv
 
 # Получить текущую дату и время
@@ -121,7 +122,7 @@ def load_currencies_json_file(settings_file: str) -> list[str]:
     """
     Функция принимает путь к json-файлу с настройками пользователя
     и возвращает список валют
-    :param user_settings_file: страка содержащая путь к json-файлу
+    :param settings_file: страка содержащая путь к json-файлу
     :return: список валют
     """
     try:
@@ -168,5 +169,72 @@ def get_exchange_rate(date_str: str, currency_from: list[str], currency_to: str)
             result_rate = 0.0
 
         result_list.append({"currency": i, "rate": result_rate})
+
+    return result_list
+
+
+def load_prices_json_file(settings_file: str) -> list[str]:
+    """
+    Функция принимает путь к json-файлу с настройками пользователя
+    и возвращает список акций
+    :param settings_file: страка содержащая путь к json-файлу
+    :return: список акций
+    """
+    try:
+        with open(settings_file, mode="r", encoding="utf-8") as currencies_file:
+            try:
+                user_settings = json.load(currencies_file)
+                currencies_result = []
+                for i in user_settings["user_stocks"]:
+                    if len(i) != 0:
+                        currencies_result.append(i)
+            except json.JSONDecodeError:
+                return ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
+    except FileNotFoundError:
+        return ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
+
+    return currencies_result
+
+
+def get_stock_prices(date_str: str, stock_prices_list: list[str]) -> list[dict]:
+    """
+    Функция принимает дату в формате 2025-08-20 список тикеров акций
+    и возвращает список акций
+    :param date_str: страка содержащая дату в формате 2025-08-20
+    :param stock_prices_list: список тикеров акций
+    :return: список акций
+    """
+    try:
+        # Преобразуем строку в объект datetime
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+
+        # Вычитаем один день
+        new_dt = dt - timedelta(days=1)
+
+        # Преобразуем обратно в строку нужного формата
+        date_str2 = new_dt.strftime("%Y-%m-%d")
+
+        result_list = []
+
+        for i in stock_prices_list:
+            # Загружаем тикер например AAPL
+            aapl = yf.Ticker(i)
+
+            # Запрашиваем исторические данные за одну точку — нужную нам дату
+            data = aapl.history(start=date_str2, end=date_str)  # Важно указывать следующий день окончания периода!
+
+            # Извлекаем цену закрытия на нашу дату
+            close_price = data["Close"].values[0]
+            close_price = round(close_price, 2)
+
+            result_list.append({"stock": i, "price": close_price})
+    except Exception:
+        result_list = [
+            {"stock": "AAPL", "price": 0},
+            {"stock": "AMZN", "price": 0},
+            {"stock": "GOOGL", "price": 0},
+            {"stock": "MSFT", "price": 0},
+            {"stock": "TSLA", "price": 0},
+        ]
 
     return result_list

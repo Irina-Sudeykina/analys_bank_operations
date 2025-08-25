@@ -182,3 +182,51 @@ def test_get_exchange_rate_failure(mock_get: Any) -> None:
 
     # Ожидается, что при ошибке API вернутся нулевые значения
     assert result == [{"currency": "USD", "rate": 0.0}, {"currency": "EUR", "rate": 0.0}]
+
+
+def test_load_prices_json_file() -> None:
+    """
+    Проверка работы функции load_prices_json_file,
+    которая принимает на вход путь до JSON-файла
+    и возвращает список акций
+    :return: список акций
+    """
+    assert utils.load_prices_json_file(file_of_names) == ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
+
+    assert os.path.exists(file_of_names)
+
+    assert utils.load_prices_json_file("test") == ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
+    assert utils.load_prices_json_file(bad_json_file) == ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
+
+
+def test_get_stock_prices() -> None:
+    """
+    Проверка работы функции get_stock_prices,
+    которая принимает дату в формате 2025-08-20 список тикеров акций
+    и возвращает список акций
+    :return: список акций
+    """
+    stock_prices_list = ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]
+    date_str = "2025-08-20"
+    assert utils.get_stock_prices(date_str, stock_prices_list) == [
+        {"stock": "AAPL", "price": 230.56},
+        {"stock": "AMZN", "price": 228.01},
+        {"stock": "GOOGL", "price": 201.57},
+        {"stock": "MSFT", "price": 508.93},
+        {"stock": "TSLA", "price": 329.31},
+    ]
+
+    assert utils.get_stock_prices("2025-08-40", stock_prices_list) == [
+        {"stock": "AAPL", "price": 0},
+        {"stock": "AMZN", "price": 0},
+        {"stock": "GOOGL", "price": 0},
+        {"stock": "MSFT", "price": 0},
+        {"stock": "TSLA", "price": 0},
+    ]
+    assert utils.get_stock_prices(date_str, ["test"]) == [
+        {"stock": "AAPL", "price": 0},
+        {"stock": "AMZN", "price": 0},
+        {"stock": "GOOGL", "price": 0},
+        {"stock": "MSFT", "price": 0},
+        {"stock": "TSLA", "price": 0},
+    ]
