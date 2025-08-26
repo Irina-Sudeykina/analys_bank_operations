@@ -31,86 +31,81 @@ def home_json() -> str:
     :return: JSON-ответ
     """
     return """{
-    "greeting": "Доброе утро",
+    "greeting": "Добрый день",
     "cards": [
         {
             "last_digits": "4556",
-            "total_spent": 1006659.05,
-            "cashback": 8959.0
-        },
-        {
-            "last_digits": "5091",
-            "total_spent": 17367.5,
-            "cashback": 0.0
+            "total_spent": 3361.7,
+            "cashback": 154.0
         },
         {
             "last_digits": "7197",
-            "total_spent": 2380912.73,
+            "total_spent": 6773.49,
             "cashback": 0.0
         }
     ],
     "top_transactions": [
         {
-            "date": "31.12.2021",
-            "amount": -160.89,
-            "category": "Супермаркеты",
-            "description": "Колхоз"
-        },
-        {
-            "date": "31.12.2021",
-            "amount": -64.0,
-            "category": "Супермаркеты",
-            "description": "Колхоз"
-        },
-        {
-            "date": "31.12.2021",
-            "amount": -118.12,
+            "date": "20.08.2021",
+            "amount": -226.7,
             "category": "Супермаркеты",
             "description": "Магнит"
         },
         {
-            "date": "31.12.2021",
-            "amount": -78.05,
-            "category": "Супермаркеты",
-            "description": "Колхоз"
+            "date": "19.08.2021",
+            "amount": -40.0,
+            "category": "Фастфуд",
+            "description": "Rumyanyj Khleb"
         },
         {
-            "date": "31.12.2021",
-            "amount": -564.0,
-            "category": "Различные товары",
-            "description": "Ozon.ru"
+            "date": "18.08.2021",
+            "amount": -115.98,
+            "category": "Супермаркеты",
+            "description": "Магнит"
+        },
+        {
+            "date": "18.08.2021",
+            "amount": -7632.84,
+            "category": "ЖКХ",
+            "description": "ЖКУ Квартира"
+        },
+        {
+            "date": "18.08.2021",
+            "amount": -112.26,
+            "category": "Другое",
+            "description": "Kvartplata.Info"
         }
     ],
     "currency_rates": [
         {
             "currency": "USD",
-            "rate": 80.66
+            "rate": 80.85
         },
         {
             "currency": "EUR",
-            "rate": 94.56
+            "rate": 93.94
         }
     ],
     "stock_prices": [
         {
             "stock": "AAPL",
-            "price": 230.56
+            "price": 143.62
         },
         {
             "stock": "AMZN",
-            "price": 228.01
+            "price": 159.39
         },
         {
             "stock": "GOOGL",
-            "price": 201.57
+            "price": 134.87
         },
         {
             "stock": "MSFT",
-            "price": 508.93
+            "price": 287.16
         },
         {
             "stock": "TSLA",
-            "price": 329.31
+            "price": 224.49
         }
     ]
 }"""
@@ -221,3 +216,90 @@ def user_settings_json() -> dict:
     :return: словарь с настройками список валют и список акций
     """
     return {"user_currencies": ["USD", "EUR"], "user_stocks": ["AAPL", "AMZN", "GOOGL", "MSFT", "TSLA"]}
+
+
+@pytest.fixture
+def home_json_datetame_now() -> str:
+    """
+    Фикстура содержимого JSON-ответа с данными для текущей даты
+    :return: JSON-ответ
+    """
+    return """{
+    "greeting": "Добрый день",
+    "cards": [
+        {
+            "last_digits": "4556",
+            "total_spent": 3361.7,
+            "cashback": 154.0
+        },
+        {
+            "last_digits": "7197",
+            "total_spent": 6773.49,
+            "cashback": 0.0
+        }
+    ],
+    "top_transactions": [
+        {
+            "date": "20.08.2021",
+            "amount": -226.7,
+            "category": "Супермаркеты",
+            "description": "Магнит"
+        },
+        {
+            "date": "19.08.2021",
+            "amount": -40.0,
+            "category": "Фастфуд",
+            "description": "Rumyanyj Khleb"
+        },
+        {
+            "date": "18.08.2021",
+            "amount": -115.98,
+            "category": "Супермаркеты",
+            "description": "Магнит"
+        },
+        {
+            "date": "18.08.2021",
+            "amount": -7632.84,
+            "category": "ЖКХ",
+            "description": "ЖКУ Квартира"
+        },
+        {
+            "date": "18.08.2021",
+            "amount": -112.26,
+            "category": "Другое",
+            "description": "Kvartplata.Info"
+        }
+    ],
+    "currency_rates": [
+        {
+            "currency": "USD",
+            "rate": 80.85
+        },
+        {
+            "currency": "EUR",
+            "rate": 93.94
+        }
+    ],
+    "stock_prices": [
+        {
+            "stock": "AAPL",
+            "price": 0
+        },
+        {
+            "stock": "AMZN",
+            "price": 0
+        },
+        {
+            "stock": "GOOGL",
+            "price": 0
+        },
+        {
+            "stock": "MSFT",
+            "price": 0
+        },
+        {
+            "stock": "TSLA",
+            "price": 0
+        }
+    ]
+}"""
