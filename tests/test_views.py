@@ -82,11 +82,11 @@ def test_get_home_json_datetime_now(mock_datetime: MagicMock) -> None:
     "currency_rates": [
         {
             "currency": "USD",
-            "rate": 80.85
+            "rate": 80.61
         },
         {
             "currency": "EUR",
-            "rate": 93.94
+            "rate": 93.87
         }
     ],
     "stock_prices": [
