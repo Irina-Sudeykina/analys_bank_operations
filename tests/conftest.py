@@ -1,3 +1,4 @@
+from datetime import date, datetime
 import pandas as pd
 import pytest
 
@@ -330,3 +331,40 @@ def transactions_category() -> pd.DataFrame:
     }
     df = pd.DataFrame(data)
     return df
+
+
+@pytest.fixture
+def log_ok_str() -> str:
+    """
+    Фикстура лога при корректном срабатывании функции
+    :return: строка лога
+    """
+    args = (3, 5)
+    kwargs = "{}"
+
+    log_text = f"""
+2025-08-13 03:16:45:
+Function add_numbers called with args: {args} and kwargs: {kwargs}.
+Execution time: 0:00:00. Result: 8
+"""
+    return log_text
+
+
+@pytest.fixture
+def log_err_str() -> str:
+    """
+    Фикстура лога при срабатывании функции с ошибкой
+    :return: строка лога
+    """
+    start_datetime = datetime.now()
+    args = (2, "3")
+    kwargs = "{}"
+
+    log_text = f"""
+{start_datetime.strftime("%Y-%m-%d %H:%M:%S")}:
+Function add_numbers called with args: {args} and kwargs: {kwargs}.
+"""
+
+    log_text += """Error: unsupported operand type(s) for +: 'int' and 'str'
+"""
+    return log_text
